@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum DriverStatus {
+  OFFLINE
+  AVAILABLE
+  BUSY
+}
+
+enum ClientStatus {
+  OFFLINE
+  LOOKING_FOR_DRIVER
+  ON_RIDE
+}
+
+enum RideStatus {
+  CANCELLED
+  NOT_FOUND
+  ONGOING
+  COMPLETED
+}
+
+model Driver {
+  id        Int          @id @default(autoincrement())
+  name      String
+  email     String       @unique
+  status    DriverStatus @default(OFFLINE)
+  earnings  Float        @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  rides     Ride[]
+}
+
+model Client {
+  id        Int          @id @default(autoincrement())
+  name      String
+  email     String       @unique
+  status    ClientStatus @default(OFFLINE)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  rides     Ride[]
+}
+
+model Ride {
+  id          Int        @id @default(autoincrement())
+  status      RideStatus @default(NOT_FOUND)
+  pickupPoint String
+  destination String
+  totalPrice  Float
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  driver      Driver?    @relation(fields: [driverId], references: [id])
+  driverId    Int?
+  client      Client     @relation(fields: [clientId], references: [id])
+  clientId    Int
+}

@@ -13,6 +13,8 @@ import { TRPCProvider } from "../context/TRPCProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { AuthProvider } from "@/context/AuthContext";
+import "../global.css";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,10 +38,13 @@ export default function RootLayout() {
     <GestureHandlerRootView>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <TRPCProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
+          <AuthProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            />
+          </AuthProvider>
         </TRPCProvider>
         <StatusBar style="auto" />
       </ThemeProvider>
